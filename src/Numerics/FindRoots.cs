@@ -125,15 +125,15 @@ namespace MathNet.Numerics
         /// <summary>
         /// Find all roots of a polynomial with complex coefficients by calculating the characteristic polynomial of the companion matrix
         /// </summary>
-        /// <param name="coefficients">The coefficients of the polynomial in ascending order, e.g. new Complex[] {new (5, 0), new (0, 2) new (2,3)} = "5 + 2i x^1 + (2 + 3i) x^2"</param>
+        /// <param name="coefficients">The coefficients of the polynomial in ascending order, e.g. new Complex[] {new (5, 0), new (0, 2), new (2,3)} = "5 + 2i x^1 + (2 + 3i) x^2"</param>
         /// <returns>The roots of the polynomial</returns>
 
         public static Complex[] Roots(Complex[] coefficients)
         {
-            int n = coefficients.Length;
+            int n = coefficients.Length - 1;
             if (n < 2)
             {
-                return null;
+                return Array.Empty<Complex>();
             }
 
             // Negate, and normalize (scale such that the polynomial becomes monic)

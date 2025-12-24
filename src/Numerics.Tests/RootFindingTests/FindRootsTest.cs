@@ -27,9 +27,10 @@
 // OTHER DEALINGS IN THE SOFTWARE.
 // </copyright>
 
-using System;
-using Complex = System.Numerics.Complex;
 using NUnit.Framework;
+using System;
+using System.Linq;
+using Complex = System.Numerics.Complex;
 
 namespace MathNet.Numerics.Tests.RootFindingTests
 {
@@ -209,6 +210,45 @@ namespace MathNet.Numerics.Tests.RootFindingTests
             // Verify they really are roots
             AssertComplexEqual(Complex.Zero, c + b*x1 + a*x1*x1, 1e-14);
             AssertComplexEqual(Complex.Zero, c + b*x2 + a*x2*x2, 1e-14);
+        }
+
+        [Test]
+        public void RootsTest()
+        {           
+            var c1 = new Complex[] { new Complex(1, 1), new Complex (1,1), new Complex (1,1) };
+
+            var r1 = FindRoots.Roots( new Complex[] { c1[0] });
+            Assert.AreEqual(Array.Empty<Complex>(), r1);
+
+            var r2 = FindRoots.Roots(new Complex[] { c1[0], c1[1] });
+            Assert.AreEqual (Array.Empty<Complex>(), r2);
+
+            //expected imaginary component = Math.Sqrt(3) / 2
+            var expected_1 = new Complex[] { new Complex(-0.5, -0.8660254037844386), new Complex(-0.5, 0.8660254037844386) };
+            TestRootsEqual(c1, expected_1);
+
+            //Expected root values calculated with cube root forumla using System.Math functions
+            var c2 = new Complex[] { new Complex(-2, 3), new Complex(1, 0), new Complex(0, 1), new Complex(2, 1)};
+            var expected_2 = new Complex[] { new Complex(0.828084722641885, -0.6508989159005254), new Complex(-0.9759670820130891, -0.900661591057162), new Complex(-0.052117640628795536, 1.1515605069576873) };
+            TestRootsEqual (c2, expected_2);
+        }
+
+        static void TestRootsEqual(Complex[] x, Complex[] eIn)
+        {
+            var tol = 1e-10;
+            var r0 = FindRoots.Roots(x);
+
+            var e = eIn.OrderBy(v => v.Imaginary).ToArray();
+            var r = r0.OrderBy(v => v.Imaginary).ToArray();
+
+            Assert.IsNotEmpty(r);
+            Assert.AreEqual(e.Length, r.Length, "Length mismatch");
+            for (int k = 0; k < r.Length; k++)
+            {
+                var msg = String.Format("At k={0}", k);
+                Assert.AreEqual(e[k].Real, r[k].Real, tol, msg);
+                Assert.AreEqual(e[k].Imaginary, r[k].Imaginary, tol, msg);
+            }           
         }
     }
 }
