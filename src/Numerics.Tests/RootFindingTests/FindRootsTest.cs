@@ -213,42 +213,111 @@ namespace MathNet.Numerics.Tests.RootFindingTests
         }
 
         [Test]
-        public void RootsTest()
-        {           
-            var c1 = new Complex[] { new Complex(1, 1), new Complex (1,1), new Complex (1,1) };
-
-            var r1 = FindRoots.Roots( new Complex[] { c1[0] });
-            Assert.AreEqual(Array.Empty<Complex>(), r1);
-
-            var r2 = FindRoots.Roots(new Complex[] { c1[0], c1[1] });
-            Assert.AreEqual (Array.Empty<Complex>(), r2);
-
-            //expected imaginary component = Math.Sqrt(3) / 2
-            var expected_1 = new Complex[] { new Complex(-0.5, -0.8660254037844386), new Complex(-0.5, 0.8660254037844386) };
-            TestRootsEqual(c1, expected_1);
-
-            //Expected root values calculated with cube root forumla using System.Math functions
-            var c2 = new Complex[] { new Complex(-2, 3), new Complex(1, 0), new Complex(0, 1), new Complex(2, 1)};
-            var expected_2 = new Complex[] { new Complex(0.828084722641885, -0.6508989159005254), new Complex(-0.9759670820130891, -0.900661591057162), new Complex(-0.052117640628795536, 1.1515605069576873) };
-            TestRootsEqual (c2, expected_2);
-        }
-
-        static void TestRootsEqual(Complex[] x, Complex[] eIn)
+        public void RootsTestEmpty()
         {
-            var tol = 1e-10;
-            var r0 = FindRoots.Roots(x);
+            var coefficients = new Complex[] { new Complex(1, 1) };
 
-            var e = eIn.OrderBy(v => v.Imaginary).ToArray();
-            var r = r0.OrderBy(v => v.Imaginary).ToArray();
+            var roots = FindRoots.Roots(coefficients);
 
-            Assert.IsNotEmpty(r);
-            Assert.AreEqual(e.Length, r.Length, "Length mismatch");
-            for (int k = 0; k < r.Length; k++)
-            {
-                var msg = String.Format("At k={0}", k);
-                Assert.AreEqual(e[k].Real, r[k].Real, tol, msg);
-                Assert.AreEqual(e[k].Imaginary, r[k].Imaginary, tol, msg);
-            }           
+            //confirms that for "degree 0" function returns empty array
+            Assert.IsEmpty(roots); 
         }
+
+        [Test]
+        public void RootsTestLinear()
+        {
+            // (-1 + 3i)x + (2 + i) = 0
+            var coefficients = new Complex[] { new Complex(2, 1), new Complex(-1, 3)};
+
+            //x = -1/10 + 7i/10
+            var expectedRoot = new Complex[] { new Complex (-0.1, 0.7) };
+
+            var roots = FindRoots.Roots(coefficients);
+
+            //verifies returned correct number of roots
+            Assert.AreEqual(roots.Length, expectedRoot.Length, "Length mismatch");
+
+            //checks against expected roots
+            Assert.IsTrue(expectedRoot[0].AlmostEqualRelative(roots[0], 1e-10));
+
+            //verfies these are roots by plugging them into the original polynomial
+            AssertComplexEqual(Complex.Zero, coefficients[1] * roots[0] + coefficients[0], 1e-10);
+        }
+
+        [Test]
+        public void RootsTestQuadratic()
+        {
+            // x^2*i + x(-3 + i) + (1 + 2i) = 0
+            var coefficients = new Complex[] { new Complex(1, 2), new Complex(-3, 1), new Complex(0, 1) };
+
+            //Expected values calculated via quadratic forumla using System.Complex for the square root
+            var expectedRoots = new Complex[] { new Complex(-1.0987447561475183, -3.5877009563187325), new Complex(0.09874475614751821, 0.5877009563187325) };
+
+            var roots = FindRoots.Roots(coefficients);
+
+            //verifies returned correct number of roots
+            Assert.AreEqual(roots.Length, expectedRoots.Length, "Length mismatch");
+
+            roots = roots.OrderBy(v => v.Imaginary).ToArray();
+            expectedRoots = expectedRoots.OrderBy(v => v.Imaginary).ToArray();
+            
+            for (int i = 0; i < roots.Length; i++)
+            {
+                // checks against expected roots
+                Assert.IsTrue(expectedRoots[i].AlmostEqualRelative(roots[i], 1e-10));
+
+                //verfies these are roots by plugging them into the original polynomial
+                AssertComplexEqual(expectedRoots[i], roots[i], 1e-10);
+            }
+        }
+
+        [Test]
+        public void RootstestCubic()
+        {
+            //Expected root values calculated with cubic root forumla using System.Math functions
+            var coefficients = new Complex[] { new Complex(-2, 3), new Complex(1, 0), new Complex(0, 1), new Complex(2, 1) };
+            var expectedRoots = new Complex[] { new Complex(0.828084722641885, -0.6508989159005254), new Complex(-0.9759670820130891, -0.900661591057162), new Complex(-0.052117640628795536, 1.1515605069576873) };
+
+            var roots = FindRoots.Roots(coefficients);
+
+            //verifies returned correct number of roots
+            Assert.AreEqual(roots.Length, expectedRoots.Length, "Length mismatch");
+
+            roots = roots.OrderBy(v => v.Imaginary).ToArray();
+            expectedRoots = expectedRoots.OrderBy(v => v.Imaginary).ToArray();
+
+            for (int i = 0; i < roots.Length; i++)
+            {
+                // checks against expected roots
+                Assert.IsTrue(expectedRoots[i].AlmostEqualRelative(roots[i], 1e-10));
+
+                //verfies these are roots by plugging them into the original polynomial
+                AssertComplexEqual(expectedRoots[i], roots[i], 1e-10);
+            }
+        }
+
+        [Test]
+        public void RootsTestQuartic()
+        {
+            //coefficients were derivied from the roots to create a contrived quartic to check
+            var coefficients = new Complex[] { new Complex(-590, 870), new Complex(126, -53), new Complex(-33, -71), new Complex(-9, 22), new Complex(2, 4) };
+            var expectedRoots = new Complex[] { new Complex(-4.5, -1), new Complex(3, -2), new Complex(-4, -3), new Complex(2, 2) };
+            var roots = FindRoots.Roots(coefficients);
+
+            //verifies returned correct number of roots
+            Assert.AreEqual(roots.Length, expectedRoots.Length, "Length mismatch");
+
+            roots = roots.OrderBy(v => v.Imaginary).ToArray();
+            expectedRoots = expectedRoots.OrderBy(v => v.Imaginary).ToArray();
+
+            for (int i = 0; i < roots.Length; i++)
+            {
+                // checks against expected roots
+                Assert.IsTrue(expectedRoots[i].AlmostEqualRelative(roots[i], 1e-10));
+
+                //verfies these are roots by plugging them into the original polynomial
+                AssertComplexEqual(expectedRoots[i], roots[i], 1e-10);
+            }
+        }        
     }
 }

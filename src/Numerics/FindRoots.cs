@@ -131,9 +131,18 @@ namespace MathNet.Numerics
         public static Complex[] Roots(Complex[] coefficients)
         {
             int n = coefficients.Length - 1;
-            if (n < 2)
+            if (n < 1)
             {
                 return Array.Empty<Complex>();
+            }
+            if (n == 1)
+            {
+                //coefficients[0] = (c + di)
+                //coefficients[1] = (a + bi)
+                // (c + di) + (a + bi)x = 0
+                // x = -(c + di)/(a + bi)          
+
+                return new Complex[] { -coefficients[0] / coefficients[1] };
             }
 
             // Negate, and normalize (scale such that the polynomial becomes monic)
