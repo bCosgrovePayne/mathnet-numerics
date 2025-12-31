@@ -136,12 +136,7 @@ namespace MathNet.Numerics
                 return Array.Empty<Complex>();
             }
             if (n == 1)
-            {
-                //coefficients[0] = (c + di)
-                //coefficients[1] = (a + bi)
-                // (c + di) + (a + bi)x = 0
-                // x = -(c + di)/(a + bi)          
-
+            {        
                 return new Complex[] { -coefficients[0] / coefficients[1] };
             }
 

@@ -213,7 +213,7 @@ namespace MathNet.Numerics.Tests.RootFindingTests
         }
 
         [Test]
-        public void RootsTestEmpty()
+        public void RootsEmpty()
         {
             var coefficients = new Complex[] { new Complex(1, 1) };
 
@@ -224,7 +224,7 @@ namespace MathNet.Numerics.Tests.RootFindingTests
         }
 
         [Test]
-        public void RootsTestLinear()
+        public void RootsLinear()
         {
             // (-1 + 3i)x + (2 + i) = 0
             var coefficients = new Complex[] { new Complex(2, 1), new Complex(-1, 3)};
@@ -245,7 +245,7 @@ namespace MathNet.Numerics.Tests.RootFindingTests
         }
 
         [Test]
-        public void RootsTestQuadratic()
+        public void RootsQuadratic()
         {
             // x^2*i + x(-3 + i) + (1 + 2i) = 0
             var coefficients = new Complex[] { new Complex(1, 2), new Complex(-3, 1), new Complex(0, 1) };
@@ -272,7 +272,7 @@ namespace MathNet.Numerics.Tests.RootFindingTests
         }
 
         [Test]
-        public void RootstestCubic()
+        public void RootsCubic()
         {
             //Expected root values calculated with cubic root forumla using System.Math functions
             var coefficients = new Complex[] { new Complex(-2, 3), new Complex(1, 0), new Complex(0, 1), new Complex(2, 1) };
@@ -297,7 +297,7 @@ namespace MathNet.Numerics.Tests.RootFindingTests
         }
 
         [Test]
-        public void RootsTestQuartic()
+        public void RootsQuartic()
         {
             //coefficients were derivied from the roots to create a contrived quartic to check
             var coefficients = new Complex[] { new Complex(-590, 870), new Complex(126, -53), new Complex(-33, -71), new Complex(-9, 22), new Complex(2, 4) };
